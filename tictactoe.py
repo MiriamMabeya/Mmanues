@@ -1,109 +1,281 @@
 #Tic-Tac-Toe
-import random 
-def drawBoard(board):
-    def inputPlayerLetter(X):
-        letter = 'X'
-    while not (letter == 'X' or letter == 'O'):
-        print('Do you want to be X or O?')
-        letter = input().upper()
-# both X and O cannot win. they are in a draw
-        board = {'O', 'X', 'X', 
-                   'O', 'X', 'X', 
-                   'O', 'O', 'X'};
 
-# board shows X has won
-board = {'X', 'O', 'X', 
-         'X', 'O', 'O', 
-         'X', 'X', 'O'};
+# Step 1
+
+# board shows x has won
+def evaluate(board):
+    # Check if the player with crosses (Xs) has won
+    if 'xxx' in board:
+        return 'X'  # Player with crosses (Xs) has won
+    else:
+        return '-'  # Game is still ongoing or a draw
+
+# Example usage:
+board_example = "xx-ooxxxo"
+result = evaluate(board_example)
+
+if result == 'X':
+    print("Player with crosses (Xs) has won!")
+else:
+    print("Game is still ongoing or it's a draw.")
+
 
 # board shows O has won
-board = {'O', 'X', 'O', 
-         'O', 'X', 'X', 
-         'O', 'O', 'X'};
+def evaluate(board):
+    # Check if the player with noughts (Os) has won
+    if 'ooo' in board:
+        return 'O'  # Player with noughts (Os) has won
+    else:
+        return '-'  # Game is still ongoing or a draw
 
-# rest board where game is not finished
-board = {'O', 'X', '', 
-         '', '', '', 
-         '', '', ''};
+# Example usage:
+board_example = "xx-oxxooo"
+result = evaluate(board_example)
 
-# Step 2: Write a move function that accepts the string with the game board
-def move(board, mark, position):
-    move = ''
-    while move in '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19'.split():
-        move = input()
-        return int(move)
+if result == 'O':
+    print("Player with noughts (Os) has won!")
+else:
+    print("Game is still ongoing or it's a draw.")
+
+
+# Function that shows Both x and o cannot win. They are in a draw
     
-    # Step 3. a player_move function that accepts a string with the game board.
-    def getPlayerMove(board):
-        move = ''
-        while move not in '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10'. split() or not 'isSpaceFree' (board, int(move)):
-            print('What is your next move?, (0-10)')
-            move = input()
-            return int(move)
-        
-        # Step 4 computer move. for this case, The first element in the list is the player's letter; the second is the computer's letter.
-        def inputPlayerLetter():
-            letter = ''
-            while not (letter == 'X' or letter == 'O'):
-                print('Do you want to be X or O?')
-                letter = input().upper()
-                if letter == 'X':
-                    return ['X', 'O']
-                else:
-                    return ['O', 'X']
+def evaluate(board):
+    # Check if the board is full and nobody has won
+    if '-' not in board and 'xxx' not in board and 'ooo' not in board:
+        return "The board is full, but nobody has won."
+    else:
+        return "Game is still ongoing or someone has won."
+
+# Example usage:
+board_example = "xxooxxoxo"
+result = evaluate(board_example)
+
+print(result)
 
 
-    def getComputerMove(board, computerLetter):
-            if computerLetter == 'X':
-                playerLetter = 'O'
+# Function that shows game is at Rest and not finished.
+
+def evaluate(board):
+    # Check if the game is not finished
+    if '-' in board or 'xxx' in board or 'ooo' in board:
+        return "Rest"  # Game is not finished
+    else:
+        return "The game is finished."
+
+# Example usage:
+board_example = "xxooxxox-"
+result = evaluate(board_example)
+
+print(result)
+
+
+# Step 2
+
+def move(board, position, mark):
+    # Check if the position is valid
+    if 0 <= position < len(board) and board[position] == '-':
+        # Valid move, update the board
+        new_board = list(board)
+        new_board[position] = mark
+        return ''.join(new_board)
+    else:
+        # Invalid move, return the original board
+        return board
+
+# Example usage:
+initial_board = "-------------------"
+new_board = move(initial_board, 5, 'x')
+
+print("Initial Board:", initial_board)
+print("New Board:", new_board)
+
+
+# Step 3
+
+def player_move(board):
+    valid_move = False
+    while not valid_move:
+        try:
+            position = int(input("Enter the position (0-19) where you want to play: "))
+            if 0 <= position < len(board) and board[position] == '-':
+                valid_move = True
             else:
-                playerLetter = 'X'
-                move = 'chooseRandomMoveFromList', (board), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19,]
-                if move != None:
-                    return move
-                
-   # Step 5   function that creates a string with a game board and alternately calls the player_move and pc_move functions until someone wins or draws
-print('Welcome to Tic-Tac-Toe!')
-while True:
-    theBoard = [' '] *10
-    playerLetter, computerLetter = inputPlayerLetter.()
-    turn = whoGoesFirst.()
-    print('The ' + turn + ' will go first.')
-    gameIsPlaying = True                   
+                print("Invalid move. Please choose an unoccupied position within the valid range.")
+        except ValueError:
+            print("Invalid input. Please enter a valid integer.")
 
-    while gameIsPlaying:
-        if turn == 'player':
-            drawBoard(theBoard)
-            move = getPlayerMove(theBoard)
-            makeMove(theBoard, playerLetter, move)
+    mark = input("Enter 'x' or 'o' for your move: ")
 
-            if isWinner(theBoard, playerLetter):
-                drawBoard(theBoard)
-                print('Hooray! You have won the game!')
-                gameIsPlaying = False
-                else:
-                if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
-                else:
-                    turn = 'computer'
-                    
+    # Update the board with the player's move
+    new_board = list(board)
+    new_board[position] = mark
+
+    return ''.join(new_board)
+
+# Example usage:
+initial_board = "-------------------"
+updated_board = player_move(initial_board)
+
+print("Updated Board:", updated_board)
+
+
+# Step 4
+
+import random
+
+def pc_move(board):
+    valid_moves = [i for i in range(len(board)) if board[i] == '-']
+
+    if valid_moves:
+        position = random.choice(valid_moves)
+        mark = 'o'  # Assuming computer plays with 'o'
+
+        # Update the board with the computer's move
+        new_board = list(board)
+        new_board[position] = mark
+
+        return ''.join(new_board)
+    else:
+        # No valid moves left, return the original board
+        return board
+
+# Example usage:
+initial_board = "-------------------"
+updated_board = pc_move(initial_board)
+
+print("Updated Board (Computer's Move):", updated_board)
+
+
+# Step 5
+
+def evaluate(board):
+    # Check if the player with crosses (Xs) has won
+    if 'xxx' in board:
+        return 'X'  # Player with crosses (Xs) has won
+    # Check if the player with noughts (Os) has won
+    elif 'ooo' in board:
+        return 'O'  # Player with noughts (Os) has won
+    # Check if the board is full and nobody has won
+    elif '-' not in board:
+        return 'D'  # Draw (nobody has won, and the board is full)
+    else:
+        return '-'  # Game is still ongoing
+
+def player_move(board):
+    valid_move = False
+    while not valid_move:
+        try:
+            position = int(input("Enter the position (0-19) where you want to play: "))
+            if 0 <= position < len(board) and board[position] == '-':
+                valid_move = True
             else:
-                move = getComputerMove(theBoard, computerLetter)
-makeMove(theBoard, computerLetter, move)
-if isWinner(theBoard, computerLetter):
- drawBoard(theBoard)
- print('The computer has beaten you! You loose.')
- gameIsPlaying = False
-else:
-       if isBoardFull(theBoard)
-       drawBoard(theBoard)
-       print('The game is a tie!')
-break 
+                print("Invalid move. Please choose an unoccupied position within the valid range.")
+        except ValueError:
+            print("Invalid input. Please enter a valid integer.")
 
-else:
-turn = 'player'   
-print('Do you want to play again? (yes or no)')
-if not input().lower().startswith('y'):
-    break
+    mark = 'X'  # Assuming player plays with 'X'
+
+    # Update the board with the player's move
+    new_board = list(board)
+    new_board[position] = mark
+
+    return ''.join(new_board)
+
+def pc_move(board):
+    valid_moves = [i for i in range(len(board)) if board[i] == '-']
+
+    if valid_moves:
+        position = random.choice(valid_moves)
+        mark = 'O'  # Assuming computer plays with 'O'
+
+        # Update the board with the computer's move
+        new_board = list(board)
+        new_board[position] = mark
+
+        return ''.join(new_board)
+    else:
+        # No valid moves left, return the original board
+        return board
+
+def display_board(board):
+    print("Current Board:")
+    print(board[:5])
+    print(board[5:10])
+    print(board[10:15])
+    print(board[15:])
+
+def play_game():
+    board = "-------------------"
+    winner = '-'
+
+    while winner == '-':
+        display_board(board)
+
+        # Player's move
+        board = player_move(board)
+        winner = evaluate(board)
+        if winner != '-':
+            break
+
+        display_board(board)
+
+        # Computer's move
+        board = pc_move(board)
+        winner = evaluate(board)
+
+    display_board(board)
+
+    if winner == 'X':
+        print("Congratulations! You win!")
+    elif winner == 'O':
+        print("Computer wins! Better luck next time.")
+    else:
+        print("It's a draw!")
+
+# Example usage:
+import random
+
+play_game()
+
+
+
+# Step 6
+
+def computer_strategy(board):
+    # Check for an immediate win opportunity
+    for i in range(len(board)):
+        if board[i] == '-':
+            test_board = list(board)
+            test_board[i] = 'O'
+            if evaluate(''.join(test_board)) == 'O':
+                return i
+
+    # Check for a blocking move (prevent player from winning)
+    for i in range(len(board)):
+        if board[i] == '-':
+            test_board = list(board)
+            test_board[i] = 'X'
+            if evaluate(''.join(test_board)) == 'X':
+                return i
+
+    # If no immediate win or block, make a strategic move
+    # For simplicity, this example chooses a random valid move
+    valid_moves = [i for i in range(len(board)) if board[i] == '-']
+    if valid_moves:
+        return random.choice(valid_moves)
+
+    return -1  # No valid moves left
+
+def improved_pc_move(board):
+    position = computer_strategy(board)
+
+    if position != -1:
+        mark = 'O'  # Assuming computer plays with 'O'
+        # Update the board with the computer's move
+        new_board = list(board)
+        new_board[position] = mark
+        return ''.join(new_board)
+    else:
+        # No valid moves left, return the original board
+        return board
