@@ -256,3 +256,200 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Question Number 5.
+# For me to make the game more interesting with larger ships, I have modified the ship placement and the turn logic and updated the above code to include 1 five-space ship, 2 three-space ships, and 3 two-space ships:
+# Also The turns now inform the player of the size of the hit ship.
+    
+import random
+
+def create_ships_grid(ship_coordinates):
+    grid = [['O' for _ in range(10)] for _ in range(10)]
+
+    for size, coordinates in ship_coordinates.items():
+        for coordinate in coordinates:
+            x, y = coordinate
+            if 0 <= x < 10 and 0 <= y < 10:
+                grid[x][y] = str(size)
+            else:
+                print(f"Ignoring invalid coordinate: {coordinate}")
+
+    return grid
+
+def select_ship_positions():
+    ships = {
+        5: [],
+        3: [],
+        3: [],
+        2: [],
+        2: [],
+        2: [],
+    }
+
+    for size, positions in ships.items():
+        print(f"Place {size}-space ship:")
+        for i in range(size):
+            while True:
+                try:
+                    x = int(input(f"Enter x-coordinate for Ship {i + 1}/{size} (0-9): "))
+                    y = int(input(f"Enter y-coordinate for Ship {i + 1}/{size} (0-9): "))
+
+                    if 0 <= x < 10 and 0 <= y < 10:
+                        if (x, y) not in positions:
+                            positions.append((x, y))
+                            break
+                        else:
+                            print("Position already taken. Try again.")
+                    else:
+                        print("Invalid coordinates. Try again.")
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+
+    return ships
+
+def randomly_place_computer_ships():
+    ships = {
+        5: [],
+        3: [],
+        3: [],
+        2: [],
+        2: [],
+        2: [],
+    }
+
+    for size, positions in ships.items():
+        for _ in range(size):
+            while True:
+                x = random.randint(0, 9)
+                y = random.randint(0, 9)
+
+                if (x, y) not in positions:
+                    positions.append((x, y))
+                    break
+
+    return ships
+
+def player_turn(opponent_ship_positions):
+    while True:
+        try:
+            x = int(input("Enter x-coordinate for your attack (0-9): "))
+            y = int(input("Enter y-coordinate for your attack (0-9): "))
+
+            if 0 <= x < 10 and 0 <= y < 10:
+                attack_position = (x, y)
+
+                for size, positions in opponent_ship_positions.items():
+                    if attack_position in positions:
+                        print(f"You hit the opponent's {size}-space ship!")
+                        positions.remove(attack_position)
+                        break
+                else:
+                    print("You missed!")
+                break
+            else:
+                print("Invalid coordinates. Try again.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+def computer_turn(opponent_ship_positions):
+    while True:
+        x = random.randint(0, 9)
+        y = random.randint(0, 9)
+
+        attack_position = (x, y)
+
+        for size, positions in opponent_ship_positions.items():
+            if attack_position in positions:
+                print(f"Computer hit your {size}-space ship!")
+                positions.remove(attack_position)
+                break
+        else:
+            print("Computer missed!")
+        break
+
+def main():
+    player_ship_positions = select_ship_positions()
+    computer_ship_positions = randomly_place_computer_ships()
+
+    player_grid = create_ships_grid(player_ship_positions)
+    computer_grid = create_ships_grid({})
+
+    player_score = 0
+    computer_score = 0
+
+    while any(opponent_ship_positions for opponent_ship_positions in [player_ship_positions, computer_ship_positions]):
+        print("\nPlayer's turn:")
+        player_turn(computer_ship_positions)
+        player_score += 1
+
+        if not any(opponent_ship_positions for opponent_ship_positions in [player_ship_positions, computer_ship_positions]):
+            break
+
+        print("\nComputer's turn:")
+        computer_turn(player_ship_positions)
+        computer_score += 1
+
+    print("\nGame over!")
+
+    if not player_ship_positions:
+        print("Congratulations! You sank all the computer's ships.")
+        print(f"Your score: {player_score}")
+    else:
+        print("Sorry! The computer sank all your ships.")
+        print(f"Computer's score: {computer_score}")
+
+if __name__ == "__main__":
+    main()
+    
+# Question 6 on a Better strategy for the computer
+# I have researched online and one of the best common computer startegy in battleship game is to follow up on a successful hit by targeting neighboring positions. This strategy is known as a "hunt and target" approach. Below I have updated the code on the computer_turn function implementing this strategy:
+# It also includes a last_hit and last_direction parameter to keep track of the computer's strategy. If the computer successfully hits a ship, it will continue targeting the neighboring positions in the same direction until the ship is sunk.
+    
+def computer_turn(opponent_ship_positions, last_hit=None, last_direction=None):
+    while True:
+        if last_hit is None or last_direction is None:
+            # If there is no last hit or direction, make a random move
+            x = random.randint(0, 9)
+            y = random.randint(0, 9)
+        else:
+            # If there is a last hit, continue in the same direction
+            x, y = last_hit
+            if last_direction == "up":
+                x -= 1
+            elif last_direction == "down":
+                x += 1
+            elif last_direction == "left":
+                y -= 1
+            elif last_direction == "right":
+                y += 1
+
+        attack_position = (x, y)
+
+        for size, positions in opponent_ship_positions.items():
+            if attack_position in positions:
+                print(f"Computer hit your {size}-space ship!")
+                positions.remove(attack_position)
+
+                # Update last hit and direction for the next turn
+                last_hit = attack_position
+                if last_hit[0] > x:
+                    last_direction = "up"
+                elif last_hit[0] < x:
+                    last_direction = "down"
+                elif last_hit[1] > y:
+                    last_direction = "left"
+                elif last_hit[1] < y:
+                    last_direction = "right"
+
+                break
+        else:
+            print("Computer missed!")
+            last_hit = None
+            last_direction = None
+
+        break
+
+    return last_hit, last_direction
+
+# I actually played the game and computer sank all my ships (player's ships) for the first time. For all previous games, player sank all computer ships.
